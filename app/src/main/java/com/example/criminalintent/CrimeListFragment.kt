@@ -8,12 +8,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
@@ -28,11 +31,11 @@ private const val DATE_FORMAT_1 = "EEEE, MMM d, yyyy"
 class CrimeListFragment : Fragment() {
 
 
-    interface Callbacks {
-        fun OnCrimeSelected(crimeId: UUID)
-    }
-
-    private var callbacks: Callbacks? = null
+//    interface Callbacks {
+//        fun OnCrimeSelected(crimeId: UUID)
+//    }
+//
+//    private var callbacks: Callbacks? = null
 
     private lateinit var crimeRecyclerView: RecyclerView
     private var adapter: CrimeAdapter? = CrimeAdapter(emptyList())
@@ -41,10 +44,10 @@ class CrimeListFragment : Fragment() {
         ViewModelProviders.of(this).get(CrimeListVIewModel::class.java)
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        callbacks = context as Callbacks?
-    }
+//    override fun onAttach(context: Context) {
+//        super.onAttach(context)
+//        callbacks = context as Callbacks?
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,10 +77,10 @@ class CrimeListFragment : Fragment() {
         )
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        callbacks = null
-    }
+//    override fun onDetach() {
+//        super.onDetach()
+//        callbacks = null
+//    }
 
     private inner class CrimeHolder(view: View) : RecyclerView.ViewHolder(view),
         View.OnClickListener {
@@ -107,7 +110,13 @@ class CrimeListFragment : Fragment() {
 
         override fun onClick(v: View) {
 
-            callbacks?.OnCrimeSelected(crime.id)
+            var action =
+                CrimeListFragmentDirections.nextAction(crime.id.toString())
+            view?.findNavController()?.navigate(action)
+
+                //Navigation.findNavController(view).navigate(R.id.next_action)
+
+            //callbacks?.OnCrimeSelected(crime.id)
         }
     }
 
