@@ -5,17 +5,18 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.fragment_crime_list.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -29,13 +30,15 @@ class CrimeListFragment : Fragment() {
 
 
     interface Callbacks {
-        fun OnCrimeSelected(crimeId: UUID)
+        fun onCrimeSelected(crimeId: UUID)
     }
 
     private var callbacks: Callbacks? = null
 
     private lateinit var crimeRecyclerView: RecyclerView
     private var adapter: CrimeAdapter? = CrimeAdapter(emptyList())
+
+
 
     private val crimeListViewModel: CrimeListVIewModel by lazy {
         ViewModelProviders.of(this).get(CrimeListVIewModel::class.java)
@@ -46,6 +49,11 @@ class CrimeListFragment : Fragment() {
         callbacks = context as Callbacks?
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -54,6 +62,13 @@ class CrimeListFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_crime_list, container, false)
 
         crimeRecyclerView = view.findViewById(R.id.crime_recycler_view) as RecyclerView
+        val addCrimeButton = view.findViewById<Button>(R.id.add_crime_button)
+
+        addCrimeButton.setOnClickListener {
+            val crime = Crime()
+            crimeListViewModel.addCrime(crime)
+            callbacks?.onCrimeSelected(crime.id)
+        }
 
         crimeRecyclerView.layoutManager = LinearLayoutManager(context)
         crimeRecyclerView.adapter = adapter
@@ -64,7 +79,7 @@ class CrimeListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         crimeListViewModel.crimeListLiveData.observe(
-            viewLifecycleOwner, Observer { crimes ->
+            viewLifecycleOwner, Observer { crimes  ->
                 crimes?.let {
                     Log.i(TAG, "got crime ${crimes.size}")
                     updateUI(crimes)
@@ -72,11 +87,31 @@ class CrimeListFragment : Fragment() {
 
             }
         )
+        val appCompatActivity = activity as AppCompatActivity
+        appCompatActivity.supportActionBar?.setTitle(R.string.app_name)
     }
 
     override fun onDetach() {
         super.onDetach()
         callbacks = null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_crime_list, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.new_crime -> {
+                val crime = Crime()
+                crimeListViewModel.addCrime(crime)
+                callbacks?.onCrimeSelected(crime.id)
+                true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+
     }
 
     private inner class CrimeHolder(view: View) : RecyclerView.ViewHolder(view),
@@ -107,7 +142,7 @@ class CrimeListFragment : Fragment() {
 
         override fun onClick(v: View) {
 
-            callbacks?.OnCrimeSelected(crime.id)
+            callbacks?.onCrimeSelected(crime.id)
         }
     }
 
@@ -194,8 +229,16 @@ class CrimeListFragment : Fragment() {
     }
 
     private fun updateUI(crimes: List<Crime>) {
-        adapter = CrimeAdapter(crimes)
-        crimeRecyclerView.adapter = adapter
+            if(crimes.isEmpty()){
+                add_crime_button.visibility = View.VISIBLE
+                no_crime_text_view.visibility = View.VISIBLE
+            }else{
+                add_crime_button.visibility = View.GONE
+                no_crime_text_view.visibility = View.GONE
+            }
+            adapter = CrimeAdapter(crimes)
+            crimeRecyclerView.adapter = adapter
+
     }
 
 

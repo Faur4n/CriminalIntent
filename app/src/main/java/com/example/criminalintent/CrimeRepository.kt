@@ -1,7 +1,6 @@
 package com.example.criminalintent
 
 
-
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.Room

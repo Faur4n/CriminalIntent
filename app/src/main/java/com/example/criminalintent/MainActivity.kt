@@ -2,6 +2,7 @@ package com.example.criminalintent
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import java.util.*
 
 private const val TAG = "MainActivity"
@@ -15,6 +16,7 @@ class MainActivity : AppCompatActivity(), CrimeListFragment.Callbacks {
 
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
 
+
         if (currentFragment == null) {
             val fragment = CrimeListFragment.newInstance()
             supportFragmentManager
@@ -26,7 +28,7 @@ class MainActivity : AppCompatActivity(), CrimeListFragment.Callbacks {
 
     }
 
-    override fun OnCrimeSelected(crimeId: UUID) {
+    override fun onCrimeSelected(crimeId: UUID) {
         val fragment = CrimeFragment.newInstance(crimeId)
         supportFragmentManager
             .beginTransaction()
