@@ -30,6 +30,7 @@ class CrimeFragment : Fragment(),DatePickerFragment.Callbacks,TimePickerFragment
     private lateinit var dateButton: Button
     private lateinit var timeButton: Button
     private lateinit var solvedCheckBox: CheckBox
+    private lateinit var policeCheckBox: CheckBox
 
 
 //    private val appCompatActivity = activity as AppCompatActivity
@@ -58,6 +59,7 @@ class CrimeFragment : Fragment(),DatePickerFragment.Callbacks,TimePickerFragment
         dateButton = view.findViewById(R.id.crime_date) as Button
         timeButton = view.findViewById(R.id.crime_time) as Button
         solvedCheckBox = view.findViewById(R.id.crime_solved) as CheckBox
+        policeCheckBox = view.findViewById(R.id.requires_police) as CheckBox
 
 //      Date Button disabled
 //        dateButton.apply {
@@ -137,6 +139,13 @@ class CrimeFragment : Fragment(),DatePickerFragment.Callbacks,TimePickerFragment
             }
 
         }
+
+        policeCheckBox.apply {
+            setOnCheckedChangeListener { _, isChecked ->
+                crime.requiresPolice = isChecked
+            }
+
+        }
     }
 
     override fun onStop() {
@@ -159,6 +168,10 @@ class CrimeFragment : Fragment(),DatePickerFragment.Callbacks,TimePickerFragment
         dateButton.text = crime.date.toString()
         solvedCheckBox.apply {
             isChecked = crime.isSolved
+            jumpDrawablesToCurrentState()
+        }
+        policeCheckBox.apply {
+            isChecked = crime.requiresPolice
             jumpDrawablesToCurrentState()
         }
     }

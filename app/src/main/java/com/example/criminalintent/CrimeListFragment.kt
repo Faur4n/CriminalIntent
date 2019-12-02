@@ -25,6 +25,9 @@ private const val TAG = "CrimeListFragment"
 
 private const val DATE_FORMAT_1 = "EEEE, MMM d, yyyy"
 
+private const val TYPE_REQUIRES = 1
+private const val TYPE_NOT_REQUIRES = 2
+
 
 class CrimeListFragment : Fragment() {
 
@@ -182,15 +185,14 @@ class CrimeListFragment : Fragment() {
         override fun onClick(v: View) {
             if (v.id == callImageView.id) {
                 startActivity(phoneIntent)
-            } else Toast.makeText(context, "${crime.title} pressed!", Toast.LENGTH_SHORT).show()
+            } else callbacks?.onCrimeSelected(crime.id)
         }
     }
 
     private inner class CrimeAdapter(var crimes: List<Crime>) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-        private val TYPE_REQUIRES = 1
-        private val TYPE_NOT_REQUIRES = 2
+
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             if (getItemViewType(position) == TYPE_REQUIRES) {
@@ -217,14 +219,14 @@ class CrimeListFragment : Fragment() {
 
         override fun getItemCount(): Int = crimes.size
 
-//        override fun getItemViewType(position: Int): Int {
-//            return if (crimes[position].requiresPolice) {
-//                TYPE_REQUIRES
-//
-//            } else {
-//                TYPE_NOT_REQUIRES
-//            }
-//        }
+        override fun getItemViewType(position: Int): Int {
+            return if (crimes[position].requiresPolice) {
+                TYPE_REQUIRES
+
+            } else {
+                TYPE_NOT_REQUIRES
+            }
+        }
 
     }
 
